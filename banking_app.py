@@ -345,7 +345,84 @@ def View_Customer_Detailes():
             print("...Invalid Choice!...")        
 # --------------------------------------------------------------
 # Update Customer-----------------------------------------------
+def Update_Customer():
+    with open("Customer_Personal_Details.txt","r") as file:
+        Lines=file.readlines()
+    Updated_Lines=[]
+    Customer_Ids=[]
+    for Line in Lines:
+        Customer_Ids.append(Line.split("   ")[2])
+    print("   1.Customize All Details\n   2.Customize Name\n   3.Customize Address\n   4.Customize Mobile No\n   5.Customize G-Mail Address")
+    Admin_Choice=int(input("Enter Your Choice:"))
+    if Admin_Choice==1:
+        Customer_Id=input("Enter The Current Customer Id:")
+        if Customer_Id in Customer_Ids:
+            for Line in Lines:
+                if Customer_Id in Line.split("   "):
+                    Datas=Line.split("   ")
+                    Customer_Details=Customer_Details_Get()
+                    Updated_Lines.append(f"{Datas[0]}   {Datas[1]}   {Datas[2]}   {Customer_Details[0]}   {Customer_Details[1]}   {Customer_Details[2]}   {Customer_Details[3]}   {Customer_Details[4]}   {Customer_Details[5]}   {Customer_Details[6]}   {Customer_Details[7]}   {Customer_Details[8]}")
+                else:
+                    Updated_Lines.append(Line)  
+        else:
+            print(f"...{Customer_Id} Is Not In Our Customer List!...")
+    if Admin_Choice==2:
+        Customer_Id=input("Enter The Current Customer Id:")
+        if Customer_Id in Customer_Ids:
+            First_Name=input("Enter Your First Name:")
+            Last_Name=input("Enter Your Last Name:")
+            for Line in Lines:
+                if Customer_Id in Line.split("   "):
+                    Datas=Line.split("   ")
+                    Updated_Lines.append(f"{Datas[0]}   {Datas[1]}   {Datas[2]}   {First_Name}   {Last_Name}   {Datas[5]}   {Datas[6]}   {Datas[7]}   {Datas[8]}   {Datas[9]}   {Datas[10]}   {Datas[11]}")
+                else:
+                    Updated_Lines.append(Line)
+        else:
+            print(f"...{Customer_Id} Is Not In Our Customer List!...")
+    if Admin_Choice==3:       
+        Customer_Id=input("Enter The Current Customer Id:")
+        if Customer_Id in Customer_Ids:
+            Address=input("Enter Your Address:")
+            for Line in Lines:
+                if Customer_Id in Line.split("   "):
+                    Datas=Line.split("   ")
+                    Updated_Lines.append(f"{Datas[0]}   {Datas[1]}   {Datas[2]}   {Datas[3]}   {Datas[4]}   {Datas[5]}   {Datas[6]}   {Datas[7]}   {Datas[8]}   {Address}   {Datas[10]}   {Datas[11]}")
+                else:
+                    Updated_Lines.append(Line)
+        else:
+            print(f"...{Customer_Id} Is Not In Our Customer List!...")
+    if Admin_Choice==4:       
+        Customer_Id=input("Enter The Current Customer Id:")
+        if Customer_Id in Customer_Ids:
+            Mobile_No=int(input("Enter Your Mobile Number:"))
+            for Line in Lines:
+                if Customer_Id in Line.split("   "):
+                    Datas=Line.split("   ")
+                    Updated_Lines.append(f"{Datas[0]}   {Datas[1]}   {Datas[2]}   {Datas[3]}   {Datas[4]}   {Datas[5]}   {Datas[6]}   {Datas[7]}   {Datas[8]}   {Datas[9]}   {str(Mobile_No)}   {Datas[11]}")
+                else:
+                    Updated_Lines.append(Line)
+        else:
+            print(f"...{Customer_Id} Is Not In Our Customer List!...")
+    if Admin_Choice==5:       
+        Customer_Id=input("Enter The Current Customer Id:")
+        if Customer_Id in Customer_Ids:
+            G_Mail=input("Enter Your Mobile G-Mail Address:")
+            for Line in Lines:
+                if Customer_Id in Line.split("   "):
+                    Datas=Line.split("   ")
+                    Updated_Lines.append(f"{Datas[0]}   {Datas[1]}   {Datas[2]}   {Datas[3]}   {Datas[4]}   {Datas[5]}   {Datas[6]}   {Datas[7]}   {Datas[8]}   {Datas[9]}   {Datas[10]}   {G_Mail}\n")
+                else:
+                    Updated_Lines.append(Line)
+        else:
+            print(f"...{Customer_Id} Is Not In Our Customer List!...")
+    else:
+         print("...Invalid Choice!...")
+    with open("Customer_Personal_Details.txt","w") as file:
+        file.writelines(Updated_Lines)
+    print("...Changes are Successfully Updated...")
+
 # --------------------------------------------------------------
+
 # Show Account Balance------------------------------------------
 def Show_Account_Balance(Customer_Id):
     with open("Account_Details.txt","r") as file:
@@ -360,18 +437,18 @@ def Transaction_HIstory(Customer_Id):
     with open("Transaction_History.txt","r") as file:
         Lines=file.readlines()
     while True:
-        print("1.All Transactions\n2.Transactions By Account\n3.Back To  Menu")
+        print("      1.All Transactions\n      2.Transactions By Account\n      3.Back To  Menu")
         Transaction_Choice=int(input("Enter Your Choic:"))
         if Transaction_Choice==1:
             for Line in Lines:
-                if Customer_Id in Line.strip().split("   "):
-                    Datas_in_Line=Line.strip().split("   ")
+                if Customer_Id in Line.split("   "):
+                    Datas_in_Line=Line.split("   ")
                     print(f"{Datas_in_Line[1]}   {Datas_in_Line[2]}   {Datas_in_Line[3]}   {Datas_in_Line[4]}   {Datas_in_Line[5]}")
         elif Transaction_Choice==2:
             Show_Customer_Accounts(Customer_Id)
             Accont_No=int(input("Enter Your Account Number:"))
             for Line in Lines:
-                if str(Accont_No) in Line.strip().split("   "):
+                if str(Accont_No) in Line.split("   "):
                     print(f"{Datas_in_Line[1]}   {Datas_in_Line[2]}   {Datas_in_Line[3]}   {Datas_in_Line[4]}   {Datas_in_Line[5]}")
         elif Transaction_Choice==3:
             break
@@ -379,11 +456,42 @@ def Transaction_HIstory(Customer_Id):
             print("...Invalid Input...")
 
 # --------------------------------------------------------------
+# Admin Transaction History-------------------------------------
+def Admin_Transaction_History():
+    with open("Transaction_History.txt","r") as file:
+        Lines=file.readlines()
+    while True:
+        print("   1.View Transaction History By Date\n   2.View Transaction History By Customer\n   3.View Transaction History By Account No\n   4.Back To Main Menu")
+        Admin_Choice=int(input("Enter Your Choice:"))
+        if Admin_Choice==1:
+            Date=input("Enter The Date:")
+            for Line in Lines:
+                if Date in Line.split("   "):
+                    Datas_in_Line=Line.split("   ")
+                    print(f"{Datas_in_Line[1]}   {Datas_in_Line[2]}   {Datas_in_Line[3]}   {Datas_in_Line[4]}   {Datas_in_Line[5]}")
+            else:
+                print("...No Transaction Available In This Date...")
+        if Admin_Choice==2:
+            Customer_Id=Getting_Customer_Id()
+            Transaction_HIstory(Customer_Id)
+        elif Admin_Choice==3:
+            Accont_No=int(input("Enter Your Account Number:"))
+            for Line in Lines:
+                if Accont_No in Line.split("   "):
+                    Datas_in_Line=Line.split("   ")
+                    print(f"{Datas_in_Line[1]}   {Datas_in_Line[2]}   {Datas_in_Line[3]}   {Datas_in_Line[4]}   {Datas_in_Line[5]}")
+        elif Admin_Choice==4:
+            break
+        else:
+            print("...Invalid Input...")
+
+            
+# --------------------------------------------------------------
 # Admin-Menu-Driven Interface-----------------------------------
 
 def Admin_Menu():
     while True:
-        print("1.Customer Registration\n2.Account Creation\n3.Deposite Money\n4.Withdraw Money\n5.View Customer Details\n6.Check Account Balance\n7.View Transaction History\n")
+        print("1.Customer Registration\n2.Account Creation\n3.Deposite Money\n4.Withdraw Money\n5.View Customer Details\n6.Check Account Balance\n7.View Transaction History\n8.Update Customer Details")
         Admin_Response=int(input("Enter Your Choice:"))
         if Admin_Response==1:
             Customer_Details_Save()
@@ -398,9 +506,10 @@ def Admin_Menu():
         elif Admin_Response==6:
             Customer_Id=input("Enter The Customer Id:")
             Show_Account_Balance(Customer_Id)
-        elif admin_choice==7:
-            Customer_Id=input("Enter The Customer Id:")
-            Transaction_HIstory(Customer_Id)
+        elif Admin_Response==7:
+            Admin_Transaction_History()
+        elif Admin_Response==8:
+            Update_Customer()
 
         
 # --------------------------------------------------------------
