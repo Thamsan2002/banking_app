@@ -1,3 +1,4 @@
+from datetime import datetime
 # Customer Registration  --------------------------------------------
 
 def Customer_Details_Get():
@@ -67,14 +68,14 @@ def Account_Creation():
         if User_Id not in User_Ids:
             if User_Name in User_Names:
                 while True:
-                    print("...This Customer Name Already Taken To Youser Name!...")
+                    print("...This Customer Name Already Taken for User Name!...")
                     New_User_Name=input("Enter a New UserName:")
                     if New_User_Name in User_Names:
                         print("...This UserName Already Taken!...\n...Try Another One...")
                     else:
                         with open("Login_Informations.txt","a") as file:
                             file.write(f"{User_Id}   {New_User_Name}   {pass_code}\n")
-                            print(f"...Successfully Account Created...\n...Your Account Number Is:{New_Account_no}...\n...Your UserName Is:{User_Name}...\n...Your PassCode Is:{pass_code}...")
+                            print(f"...Successfully Account Created...\n...Your Account Number Is:{New_Account_no}...\n...Your UserName Is:{New_User_Name}...\n...Your PassCode Is:{pass_code}...")
                             break
             else:
                 with open("Login_Informations.txt","a") as file:
@@ -90,9 +91,6 @@ def Account_Creation():
         print(f"...Successfully Account Created...\n...Your Account Number Is:{New_Account_no}...\n...Your UserName Is:{User_Name}...\n...Your PassCode Is:{pass_code}...")
     with open("Transaction_History.txt","a") as file:
         file.write(f"{User_Id}   {DATE_AND_TIME}   {New_Account_no}   +{Initial_Balance}   {Initial_Balance}\n")
-    
-# Account_Creation()
-
 # --------------------------------------------------------------
 # Getting Customer Id-------------------------------------------
 def Getting_Customer_Id():
@@ -293,7 +291,7 @@ def Withdrawal(Datas,lines,Accounts):
         else:
             print("...Enter a Valid Amount!...")
     else:
-        print("...Account Number Is Wrong...")
+        print("...Account Number Is Wrong...")    
 # --------------------------------------------------------------
 # Customer Withdrawal-------------------------------------------
 def Customer_Withdrawal(Datas):
@@ -344,6 +342,16 @@ def View_Customer_Detailes():
         else:
             print("...Invalid Choice!...")        
 # --------------------------------------------------------------
+# Show Account Balance------------------------------------------
+def Show_Account_Balance(Customer_Id):
+    with open("Account_Details.txt","r") as file:
+        Lines=file.readlines()
+    for Line in Lines:
+        if Customer_Id in Line.split("   "):
+            print(f"Your Account {Line.split("   ")[3]} Balance is:{Line.split("   ")[4]}")
+    else:
+        print(f"...{Customer_Id} Is Not In Our Customer List!...")
+# --------------------------------------------------------------
 # Update Customer-----------------------------------------------
 def Update_Customer():
     with open("Customer_Personal_Details.txt","r") as file:
@@ -352,7 +360,7 @@ def Update_Customer():
     Customer_Ids=[]
     for Line in Lines:
         Customer_Ids.append(Line.split("   ")[2])
-    print("   1.Customize All Details\n   2.Customize Name\n   3.Customize Address\n   4.Customize Mobile No\n   5.Customize G-Mail Address")
+    print("   1.Customize All Details\n   2.Customize Name\n   3.Customize Address\n   4.Customize Mobile No\n   5.Customize G-Mail Address\n")
     Admin_Choice=int(input("Enter Your Choice:"))
     if Admin_Choice==1:
         Customer_Id=input("Enter The Current Customer Id:")
@@ -422,16 +430,56 @@ def Update_Customer():
     print("...Changes are Successfully Updated...")
 
 # --------------------------------------------------------------
-
-# Show Account Balance------------------------------------------
-def Show_Account_Balance(Customer_Id):
+# Remove Customer-----------------------------------------------
+def Remove_Customer():
+    Updated_Account_Lines=[]
+    Updated_Login_Lines=[]
+    Updated_Customer_Personal_Lines=[]
+    with open("Customer_Personal_Details.txt","r") as file:
+        Customer_Personal_Lines=file.readlines()
     with open("Account_Details.txt","r") as file:
-        Lines=file.readlines()
-    for Line in Lines:
-        if Customer_Id in Line.split("   "):
-            print(f"Your Account {Line.split("   ")[3]} Balance is:{Line.split("   ")[4]}")
-        
+        Account_Lines=file.readlines()
+    with open("Login_Informations.txt","r") as file:
+            Login_lines=file.readlines()
+    Customer_Id=input("Enter The Current Customer Id:")
+    Show_Account_Balance(Customer_Id)
+    print("...If You Want Withdraw All Balance And Remove Customer Enter 1...\n...If You Want Go Back Admin Menu Enter Any Other Number...")
+    Admin_Choice=int(input("Enter Your Number:"))
+    if Admin_Choice==1:
+        for Account_Line in Account_Lines:
+            if Customer_Id in Account_Line.split("   "):
+                Account_Detas=Account_Line.strip().split("   ")
+                Current_Balance=Account_Detas[-1]
+                Date_And_Time=datetime.now().strftime("%Y-%m-%d   %H:%M:%S")
+                with open("Transaction_History.txt","a") as file:
+                    file.write(f"{Customer_Id}   {Date_And_Time}   {Account_Detas[3]}   -{Current_Balance}   0.0\n")
+                Account_Detas[-1]="0.0"
+                Account_Detas[2]=(f"Past-{Account_Detas[2]}")
+                Updated_Account_Lines.append("   ".join(Account_Detas)+"\n")
+            else:
+                Updated_Account_Lines.append(Account_Line)
+        for Login_Line in Login_lines:
+            if Customer_Id in Login_Line.split("   "):
+                pass
+            else:
+                Updated_Login_Lines.append(Login_Line)
+        for Customer_Personal_Line in Customer_Personal_Lines:
+            if Customer_Id in Customer_Personal_Line.split("   "):
+                Personal_Detas=Customer_Personal_Line.strip().split("   ")
+                Personal_Detas[2]=(f"Past-{Personal_Detas[2]}")
+                Updated_Customer_Personal_Lines.append("   ".join(Personal_Detas)+"\n")
+            else:
+                Updated_Customer_Personal_Lines.append(Customer_Personal_Line)
+    else:
+        pass
+    with open("Customer_Personal_Details.txt","w") as file:
+        file.writelines(Updated_Customer_Personal_Lines)
+    with open("Account_Details.txt","w") as file:
+        file.writelines(Updated_Account_Lines)
+    with open("Login_Informations.txt","w") as file:
+        file.writelines(Updated_Login_Lines)
 # --------------------------------------------------------------
+
 # Transaction History-------------------------------------------
 def Transaction_HIstory(Customer_Id):
     with open("Transaction_History.txt","r") as file:
@@ -491,7 +539,7 @@ def Admin_Transaction_History():
 
 def Admin_Menu():
     while True:
-        print("1.Customer Registration\n2.Account Creation\n3.Deposite Money\n4.Withdraw Money\n5.View Customer Details\n6.Check Account Balance\n7.View Transaction History\n8.Update Customer Details")
+        print("1.Customer Registration\n2.Account Creation\n3.Deposite Money\n4.Withdraw Money\n5.View Customer Details\n6.Check Account Balance\n7.View Transaction History\n8.Update Customer Details\n9.Delete Customer")
         Admin_Response=int(input("Enter Your Choice:"))
         if Admin_Response==1:
             Customer_Details_Save()
@@ -510,6 +558,8 @@ def Admin_Menu():
             Admin_Transaction_History()
         elif Admin_Response==8:
             Update_Customer()
+        elif Admin_Response==9:
+            Remove_Customer()
 
         
 # --------------------------------------------------------------
@@ -549,7 +599,7 @@ while True:
         User_Name=input("Enter Your Username:")
         Pass_Code=int(input("Enter Your Passcode:"))
         if User_Name=="admin" and Pass_Code==1234:
-                 Admin_Menu()
+            Admin_Menu()
         with open("Login_Informations.txt","r") as file:
             Lines=file.readlines()
             for Line in Lines:
