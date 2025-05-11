@@ -455,6 +455,10 @@ def Remove_Customer():
                     file.write(f"{Customer_Id}   {Date_And_Time}   {Account_Detas[3]}   -{Current_Balance}   0.0\n")
                 Account_Detas[-1]="0.0"
                 Account_Detas[2]=(f"Past-{Account_Detas[2]}")
+                if Account_Detas[3][:4]=="Past":
+                    pass
+                else:
+                    Account_Detas[3]=(f"Past-{Account_Detas[3]}")
                 Updated_Account_Lines.append("   ".join(Account_Detas)+"\n")
             else:
                 Updated_Account_Lines.append(Account_Line)
@@ -479,7 +483,27 @@ def Remove_Customer():
     with open("Login_Informations.txt","w") as file:
         file.writelines(Updated_Login_Lines)
 # --------------------------------------------------------------
-
+# Remove Account -----------------------------------------------
+def Remove_Account():
+    Updated_Account_Lines=[]
+    with open("Account_Details.txt","r") as file:
+        Account_Lines=file.readlines()
+    Account_No=input("Enter The Account No:")
+    for Account_Line in Account_Lines:
+            if Account_No in Account_Line.split("   "):
+                Account_Detas=Account_Line.strip().split("   ")
+                Current_Balance=Account_Detas[-1]
+                Date_And_Time=datetime.now().strftime("%Y-%m-%d   %H:%M:%S")
+                with open("Transaction_History.txt","a") as file:
+                    file.write(f"{Account_Detas[2]}   {Date_And_Time}   {Account_Detas[3]}   -{Current_Balance}   0.0\n")
+                Account_Detas[-1]="0.0"
+                Account_Detas[3]=(f"Past-{Account_Detas[3]}")
+                Updated_Account_Lines.append("   ".join(Account_Detas)+"\n")
+            else:
+                Updated_Account_Lines.append(Account_Line)
+    with open("Account_Details.txt","w") as file:
+        file.writelines(Updated_Account_Lines)
+# --------------------------------------------------------------
 # Transaction History-------------------------------------------
 def Transaction_HIstory(Customer_Id):
     with open("Transaction_History.txt","r") as file:
@@ -539,7 +563,7 @@ def Admin_Transaction_History():
 
 def Admin_Menu():
     while True:
-        print("1.Customer Registration\n2.Account Creation\n3.Deposite Money\n4.Withdraw Money\n5.View Customer Details\n6.Check Account Balance\n7.View Transaction History\n8.Update Customer Details\n9.Delete Customer")
+        print("1.Customer Registration\n2.Account Creation\n3.Deposite Money\n4.Withdraw Money\n5.View Customer Details\n6.Check Account Balance\n7.View Transaction History\n8.Update Customer Details\n9.Remove Customer\n10.Remove Account")
         Admin_Response=int(input("Enter Your Choice:"))
         if Admin_Response==1:
             Customer_Details_Save()
@@ -560,8 +584,8 @@ def Admin_Menu():
             Update_Customer()
         elif Admin_Response==9:
             Remove_Customer()
-
-        
+        elif Admin_Response==10:
+            Remove_Account()
 # --------------------------------------------------------------
 # Customer-Menu-Driven Interface--------------------------------
 
