@@ -1,26 +1,39 @@
+import os
 from datetime import datetime
-# Customer Registration  --------------------------------------------
-
+# Customer_Details_Get  ----------------------------------------------
 def Customer_Details_Get():
-    
     First_Name=input("Enter Your First Name:")
     Last_Name=input("Enter Your Last Name:")
     Date_Of_Birth=input("Enter Your Date Of Birth(Eg:-Year/Month/Date):")
-    Age=int(input("Enter Your Age:"))
+    while True:
+        try:
+            Age=int(input("Enter Your Age:"))
+            break
+        except:
+            print("...Numbers Only!...")
+    while True:
+        try:  
+            Mobile_NO=int(input("Enter Your Mobile Number:"))
+            break
+        except:
+            print("...Numbers Only!...")
     Gender=input("Enter Your Gender:")
     NIC_No=input("Enter Your NIC Number:")
     Address=input("Enter Your Address:")
-    G_Mail=input("Enter Your Gmail Address:")
-    Mobile_NO=int(input("Enter Your Mobile Number:"))
-    Customer_Details=[First_Name,Last_Name,Date_Of_Birth,Age,Gender,NIC_No,Address,Mobile_NO,G_Mail]
+    while True:
+        G_Mail=input("Enter Your Gmail Address:")
+        if G_Mail[-9:]=="gmail.com":
+            break
+        else:
+            print("...Enter The Correct G-Mail Address!...")
+    Customer_Details=[First_Name.upper(),Last_Name.upper(),Date_Of_Birth,Age,Gender.upper(),NIC_No,Address,Mobile_NO,G_Mail]
     return(Customer_Details)
-
+# --------------------------------------------------------------
+# Customer_Details_Save-----------------------------------------
 def Customer_Details_Save():
     Customer_Details=Customer_Details_Get()
-    from datetime import datetime
     date_and_time=datetime.now()
     DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
-    import os
     Customer_Personal_File="Customer_Personal_Details.txt"
     if os.path.exists(Customer_Personal_File):
         with open("Customer_Personal_Details.txt","r+") as file:
@@ -30,67 +43,75 @@ def Customer_Details_Save():
             file.write(f"{DATE_AND_TIME}   {Next_Customer_Id}   {Customer_Details[0]}   {Customer_Details[1]}   {Customer_Details[2]}   {Customer_Details[3]}   {Customer_Details[4]}   {Customer_Details[5]}   {Customer_Details[6]}   {Customer_Details[7]}   {Customer_Details[8]}\n")
     else:
         with open("Customer_Personal_Details.txt","w") as file:
-            file.write(f"{DATE_AND_TIME}   CU100   {Customer_Details[0]}   {Customer_Details[1]}   {Customer_Details[2]}   {Customer_Details[3]}   {Customer_Details[4]}   {Customer_Details[5]}   {Customer_Details[6]}   {Customer_Details[7]}   {Customer_Details[8]}\n")
-           
-# Customer_Details_Save()
-
+            Next_Customer_Id="CU100"
+            file.write(f"{DATE_AND_TIME}   {Next_Customer_Id}   {Customer_Details[0]}   {Customer_Details[1]}   {Customer_Details[2]}   {Customer_Details[3]}   {Customer_Details[4]}   {Customer_Details[5]}   {Customer_Details[6]}   {Customer_Details[7]}   {Customer_Details[8]}\n")
+    print(f"...Customer Registered Successfully...\nYour Customer Id Is:{Next_Customer_Id}")
 # --------------------------------------------------------------
 # Account Creation----------------------------------------------
-
 def Account_Creation():
-    NIC_No=int(input("Enter Your NIC Number:"))
-    Initial_Balance=float(input("Enter Your Deposite Amount:"))
-    from datetime import datetime
-    date_and_time=datetime.now()
-    DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
-    pass_code=str(NIC_No)[-5:-1]
     with open("Customer_Personal_Details.txt","r") as file:
-            Lines=file.readlines()
+        Lines=file.readlines()
+    Customer_Id=input("Enter Your Customer Id(Eg:-CU000):")
     for Line in Lines:
-        if str(NIC_No) in Line.split("   "):
+        if Customer_Id in Line.split("   "):
+            NIC_No=Line.split("   ")[8]
             User_Name=Line.split("   ")[4]
-            User_Id=Line.split("   ")[2]
-    import os
-    Account_file="Account_Details.txt"
-    if os.path.exists(Account_file):
-        with open("Account_Details.txt","r+") as file:
-            Last_Line=file.readlines()[-1]
-            Last_Allocated_Accont_No=Last_Line.split("   ")[3]
-            New_Account_no=str(int(Last_Allocated_Accont_No)+1)
-            file.write(f"{DATE_AND_TIME}   {User_Id}   {New_Account_no}   {Initial_Balance}\n")
-        with open("Login_Informations.txt","r") as file:
-            lines=file.readlines()
-        User_Ids=[]
-        User_Names=[]
-        for line in lines:
-            User_Ids.append(line.split("   ")[0])
-            User_Names.append(line.split("   ")[1])
-        if User_Id not in User_Ids:
-            if User_Name in User_Names:
-                while True:
-                    print("...This Customer Name Already Taken for User Name!...")
-                    New_User_Name=input("Enter a New UserName:")
-                    if New_User_Name in User_Names:
-                        print("...This UserName Already Taken!...\n...Try Another One...")
+            while True:
+                try:
+                    Initial_Balance=float(input("Enter Your Deposite Amount:"))
+                    break
+                except:
+                    print("...Enter The Correct Amount!...")
+            date_and_time=datetime.now()
+            DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
+            pass_code=NIC_No[-5:-1]
+            Account_file="Account_Details.txt"
+            if os.path.exists(Account_file):
+                with open("Account_Details.txt","r") as file:
+                    Last_Line=file.readlines()[-1]  
+                Last_Allocated_Accont_No=Last_Line.split("   ")[3]
+                if Last_Allocated_Accont_No[:4]=="Past":
+                    New_Account_no=str(int(Last_Allocated_Accont_No.strip().split("-")[-1])+1)
+                else:
+                    New_Account_no=str(int(Last_Allocated_Accont_No)+1)
+                with open("Account_Details.txt","a") as file:
+                    file.write(f"{DATE_AND_TIME}   {Customer_Id}   {New_Account_no}   {Initial_Balance}\n")
+                with open("Login_Informations.txt","r") as file:
+                    lines=file.readlines()
+                User_Ids=[]
+                User_Names=[]
+                for line in lines:
+                    User_Ids.append(line.split("   ")[0])
+                    User_Names.append(line.split("   ")[1])
+                if Customer_Id not in User_Ids:
+                    if User_Name in User_Names:
+                        while True:
+                            print("...This Customer Name Already Taken for User Name!...")
+                            New_User_Name=input("Enter a New UserName:")
+                            if New_User_Name in User_Names:
+                                print("...This UserName Already Taken!...\n...Try Another One...")
+                            else:
+                                with open("Login_Informations.txt","a") as file:
+                                    file.write(f"{Customer_Id}   {New_User_Name}   {pass_code}\n")
+                                    print(f"...Successfully Account Created...\n...Your Account Number Is:{New_Account_no}...\n...Your UserName Is:{New_User_Name}...\n...Your PassCode Is:{pass_code}...")
+                                    break
                     else:
                         with open("Login_Informations.txt","a") as file:
-                            file.write(f"{User_Id}   {New_User_Name}   {pass_code}\n")
-                            print(f"...Successfully Account Created...\n...Your Account Number Is:{New_Account_no}...\n...Your UserName Is:{New_User_Name}...\n...Your PassCode Is:{pass_code}...")
-                            break
+                            file.write(f"{Customer_Id}   {User_Name}   {pass_code}\n")
+                        print(f"...Successfully Account Created...\n...Your Account Number Is:{New_Account_no}...\n...Your UserName Is:{User_Name}...\n...Your PassCode Is:{pass_code}...")
+                else:
+                    print("...Successfully Account Created...")
             else:
-                with open("Login_Informations.txt","a") as file:
-                    file.write(f"{User_Id}   {User_Name}   {pass_code}\n")
+                New_Account_no=10000
+                with open("Account_Details.txt","a") as file:
+                    file.write(f"{DATE_AND_TIME}   {Customer_Id}   {New_Account_no}   {Initial_Balance}\n")
+                with open("Login_Informations.txt","w") as file:
+                    file.write(f"{Customer_Id}   {User_Name}   {pass_code}\n")
                 print(f"...Successfully Account Created...\n...Your Account Number Is:{New_Account_no}...\n...Your UserName Is:{User_Name}...\n...Your PassCode Is:{pass_code}...")
-        
-    else:
-        New_Account_no=10000
-        with open("Account_Details.txt","a") as file:
-            file.write(f"{DATE_AND_TIME}   {User_Id}   {New_Account_no}   {Initial_Balance}\n")
-        with open("Login_Informations.txt","w") as file:
-            file.write(f"{User_Id}   {User_Name}   {pass_code}\n")
-        print(f"...Successfully Account Created...\n...Your Account Number Is:{New_Account_no}...\n...Your UserName Is:{User_Name}...\n...Your PassCode Is:{pass_code}...")
-    with open("Transaction_History.txt","a") as file:
-        file.write(f"{User_Id}   {DATE_AND_TIME}   {New_Account_no}   +{Initial_Balance}   {Initial_Balance}\n")
+            with open("Transaction_History.txt","a") as file:
+                file.write(f"{Customer_Id}   {DATE_AND_TIME}   {New_Account_no}   +{Initial_Balance}   {Initial_Balance}\n")
+        else:
+            print("...Incorrect Customer Id!...")
 # --------------------------------------------------------------
 # Getting Customer Id-------------------------------------------
 def Getting_Customer_Id():
@@ -113,7 +134,6 @@ def Show_Customer_Accounts(Customer_Id):
     return lines,Accounts
 # --------------------------------------------------------------
 # Changing Username&Password------------------------------------
-
 def Changing_Username_Password():
     Customer_Id=Getting_Customer_Id()
     Read_Lines=[]
@@ -127,7 +147,11 @@ def Changing_Username_Password():
                 Old_Passcode=Line.split("   ")[2]
     while True:
         print("   1.Change Your Username\n   2.Change Your Passcode\n   3.Change UserName & PassCode\n   4.Exit")
-        Choice=int(input("Enter Your Choice:"))
+        try:
+            Choice=int(input("Enter Your Choice:"))
+        except ValueError:
+            print("...Input Numbers Only!...")
+            continue
         if Choice==1:
             while True:
                 New_Username=input("Enter Your New User Name:")
@@ -135,7 +159,11 @@ def Changing_Username_Password():
                         print("This UserName Already Taken\nTry Another One")
                 else:
                     while True:
-                        Pass_Code=int(input("Enter Your Passcode:"))
+                        try:
+                            Pass_Code=int(input("Enter Your Passcode:"))
+                        except ValueError:
+                            print("...PassCode Only Numbers!...")
+                            continue
                         if str(Pass_Code)==Datas[-1]:
                             for Line in Lines:
                                 if Customer_Id in Line.split("   "):
@@ -147,20 +175,27 @@ def Changing_Username_Password():
                             print(f"...Username Successfully Changed...\nYour New UserName Is:{New_Username}\n...please Login With New UserName...")
                             break
                         else:
-                            print("...Your PassCode Is Wrong!...\n...Try Again..")
+                            print("...PassCode Not Matching!...\n...Try Again..")
                     break
             break
         elif Choice==2:
             while True:
-                New_Passcode1=input("Enter Your New Passcode:")
-                New_Passcode2=input("Re Your New Passcode:")
+                try:
+                    New_Passcode1=int(input("Enter Your New Passcode:"))
+                    New_Passcode2=int(input("Re Your New Passcode:"))
+                except ValueError:
+                    print("...PassCode Only Numbers!...")
+                    continue
                 if New_Passcode1==New_Passcode2:
                     while True:
-                        Pass_Code=int(input("Enter Your Old Passcode:"))
+                        try:
+                            Pass_Code=int(input("Enter Your Old Passcode:"))
+                        except ValueError:
+                            print("...PassCode Only Numbers!...")
                         if str(Pass_Code)==Datas[-1]:
                             for Line in Lines:
                                 if Customer_Id in Line.split("   "):
-                                    Read_Lines.append(f"{Customer_Id}   {Old_Username}   {New_Passcode1}")
+                                    Read_Lines.append(f"{Customer_Id}   {Old_Username}   {New_Passcode1}\n")
                                 else:
                                     Read_Lines.append(Line)
                             with open("Login_Informations.txt","w")as file:
@@ -171,7 +206,7 @@ def Changing_Username_Password():
                             print("...Your PassCode Is Wrong!...\n...Try Again..")
                     break
                 else:
-                    print("...PassCode Not Matching...\n...Try Again...")
+                    print("...PassCode Not Matching!...\n...Try Again...")
             break
         elif Choice==3:
             while True:
@@ -180,15 +215,21 @@ def Changing_Username_Password():
                         print("This UserName Already Taken\nTry Another One")
                 else:
                     while True:
-                        New_Passcode1=input("Enter Your New Passcode:")
-                        New_Passcode2=input("Re Your New Passcode:")
+                        try:
+                            New_Passcode1=input("Enter Your New Passcode:")
+                            New_Passcode2=input("Re Your New Passcode:")
+                        except ValueError:
+                            print("...PassCode Only Numbers!...")
                         if New_Passcode1==New_Passcode2:
                             while True:
-                                Pass_Code=int(input("Enter Your Old Passcode:"))
+                                try:
+                                    Pass_Code=int(input("Enter Your Old Passcode:"))
+                                except ValueError:
+                                    print("...PassCode Only Numbers!...")
                                 if str(Pass_Code)==Datas[-1]:
                                     for Line in Lines:
                                         if Customer_Id in Line.split("   "):
-                                            Read_Lines.append(f"{Customer_Id}   {New_Username}   {New_Passcode1}")
+                                            Read_Lines.append(f"{Customer_Id}   {New_Username}   {New_Passcode1}\n")
                                         else:
                                             Read_Lines.append(Line)
                                     with open("Login_Informations.txt","w")as file:
@@ -199,29 +240,39 @@ def Changing_Username_Password():
                                     print("...Your PassCode Is Wrong!...\n...Try Again...")
                             break
                         else:
-                            print("...PassCode Not Matching...\n...Try Again...")
+                            print("...PassCode Not Matching!...\n...Try Again...")
                     break
             break
         elif Choice==4:
             break
+        else:
+            print("...Invalid Input!...")
 # --------------------------------------------------------------
 # Deposite -----------------------------------------------------
-
 def Deposite(Datas,lines,Accounts):
-    Accont_No=int(input("Enter Your Account Number:"))
+    try:
+        Accont_No=int(input("Enter Your Account Number:"))
+    except ValueError:
+        print("...Account Number Only In Numbers!...")
     if str(Accont_No) in Accounts:
-        Deposite_Money=float(input("Enter Your Deposite Ammount:"))
+        try:
+            Deposite_Money=float(input("Enter Your Deposite Ammount:"))
+        except ValueError:
+            print("...Deposite Money Only In Numbers!...")
         if Deposite_Money>0:
-            Pass_Code=int(input("Enter Your Passcode:"))
+            try:
+                Pass_Code=int(input("Enter Your Passcode:"))
+            except ValueError:
+                print("...PassCode Only Numbers!...")
             if str(Pass_Code)==Datas[-1]:
                 updated_line=[]
                 for Needed_line in lines:
                     if str(Accont_No) in Needed_line:
-                        Datas_in_line=Needed_line.strip().split("   ")
+                        Datas_in_line=Needed_line.split("   ")
                         Current_balance=Datas_in_line[4]
                         New_balance=str(float(Current_balance)+Deposite_Money)
-                        updated_line.append(f"{Datas_in_line[0]}   {Datas_in_line[1]}   {Datas_in_line[2]}   {Datas_in_line[3]}   {New_balance}\n")
-                        from datetime import datetime
+                        Datas_in_line[4]=New_balance
+                        updated_line.append("   ".join(Datas_in_line)+"\n")
                         date_and_time=datetime.now()
                         DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
                         with open("Transaction_History.txt","a") as file:
@@ -256,26 +307,33 @@ def Getting_All_Accounts():
 def Admin_Deposite(Datas):
     lines,Accounts=Getting_All_Accounts()
     Deposite(Datas,lines,Accounts)
-    
 # --------------------------------------------------------------
 # Withdrawal----------------------------------------------------
-
 def Withdrawal(Datas,lines,Accounts):
-    Accont_No=int(input("Enter Your Account Number:"))
+    try:
+        Accont_No=int(input("Enter Your Account Number:"))
+    except ValueError:
+        print("...Account Number Only In Numbers!...")
     if str(Accont_No) in Accounts:
-        Withdrawal_Money=float(input("Enter Your Withdrawal Ammount:"))
+        try:
+            Withdrawal_Money=float(input("Enter Your Withdrawal Ammount:"))
+        except ValueError:
+            print("...Withdrawal Money Only In Numbers!...")
         if Withdrawal_Money>0:
-            Pass_Code=int(input("Enter Your Passcode:"))
+            try:
+                Pass_Code=int(input("Enter Your Passcode:"))
+            except ValueError:
+                print("...PassCode Only Numbers!...")
             if str(Pass_Code)==Datas[-1]:
                 updated_line=[]
                 for Needed_line in lines:
                     if str(Accont_No) in Needed_line:
-                        Datas_in_line=Needed_line.strip().split("   ")
+                        Datas_in_line=Needed_line.split("   ")
                         Current_balance=Datas_in_line[4]
-                        if str(Withdrawal_Money)<=Current_balance:
+                        if Withdrawal_Money<=float(Current_balance):
                             New_balance=str(float(Current_balance)-Withdrawal_Money)
-                            updated_line.append(f"{Datas_in_line[0]}   {Datas_in_line[1]}   {Datas_in_line[2]}   {Datas_in_line[3]}   {New_balance}\n")
-                            from datetime import datetime
+                            Datas_in_line[4]=New_balance
+                            updated_line.append("   ".join(Datas_in_line)+"\n")
                             date_and_time=datetime.now()
                             DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
                             with open("Transaction_History.txt","a") as file:
@@ -310,11 +368,15 @@ def View_Customer_Detailes():
         Lines=file.readlines()
     while True:
         print("   1.Get Customer Id\n   2.View Customer Personal Details\n   3.View Customer Login Info\n   4.Back To Admin Menu")
-        admin_choice=int(input("Enter Your Choice:"))
+        try:
+            admin_choice=int(input("Enter Your Choice:"))
+        except ValueError:
+            print("...Input Only Numbers!...")
+            continue
         if admin_choice==1:
-            NIC_No=int(input("Enter Your NIC Number:"))
+            NIC_No=input("Enter Your NIC Number:")
             for Line in Lines:
-                if str(NIC_No) in Line.split("   "):
+                if NIC_No in Line.split("   "):
                     print(f"{NIC_No} Your Customer Id Is:{Line.split("   ")[2]}")
                     break
             else:
@@ -322,13 +384,13 @@ def View_Customer_Detailes():
         elif admin_choice==2:
             Customer_Id=(input("Enter The Customer Id:"))
             for Line in Lines:
-                if str(Customer_Id) in Line.split("   "):
+                if Customer_Id in Line.split("   "):
                     print(Line)
                     break
             else:
                 print("...Incorrect Customer Id")                           
         elif admin_choice==3:
-            Customer_Id=(input("Enter The Customer Id:"))
+            Customer_Id=input("Enter The Customer Id:")
             with open("Login_Informations.txt","r") as file:
                 lines=file.readlines()
             for line in lines:
@@ -361,66 +423,80 @@ def Update_Customer():
     for Line in Lines:
         Customer_Ids.append(Line.split("   ")[2])
     print("   1.Customize All Details\n   2.Customize Name\n   3.Customize Address\n   4.Customize Mobile No\n   5.Customize G-Mail Address\n")
-    Admin_Choice=int(input("Enter Your Choice:"))
+    try:
+        Admin_Choice=int(input("Enter Your Choice:"))
+    except ValueError:
+        print("...Input Only Numbers!...")
     if Admin_Choice==1:
-        Customer_Id=input("Enter The Current Customer Id:")
+        Customer_Id=input("Enter The Customer Id:")
         if Customer_Id in Customer_Ids:
             for Line in Lines:
                 if Customer_Id in Line.split("   "):
                     Datas=Line.split("   ")
                     Customer_Details=Customer_Details_Get()
-                    Updated_Lines.append(f"{Datas[0]}   {Datas[1]}   {Datas[2]}   {Customer_Details[0]}   {Customer_Details[1]}   {Customer_Details[2]}   {Customer_Details[3]}   {Customer_Details[4]}   {Customer_Details[5]}   {Customer_Details[6]}   {Customer_Details[7]}   {Customer_Details[8]}")
+                    Updated_Lines.append(f"{Datas[0]}   {Datas[1]}   {Datas[2]}   {Customer_Details[0]}   {Customer_Details[1]}   {Customer_Details[2]}   {Customer_Details[3]}   {Customer_Details[4]}   {Customer_Details[5]}   {Customer_Details[6]}   {Customer_Details[7]}   {Customer_Details[8]}\n")
                 else:
                     Updated_Lines.append(Line)  
         else:
             print(f"...{Customer_Id} Is Not In Our Customer List!...")
     if Admin_Choice==2:
-        Customer_Id=input("Enter The Current Customer Id:")
+        Customer_Id=input("Enter The Customer Id:")
         if Customer_Id in Customer_Ids:
             First_Name=input("Enter Your First Name:")
             Last_Name=input("Enter Your Last Name:")
             for Line in Lines:
                 if Customer_Id in Line.split("   "):
-                    Datas=Line.split("   ")
-                    Updated_Lines.append(f"{Datas[0]}   {Datas[1]}   {Datas[2]}   {First_Name}   {Last_Name}   {Datas[5]}   {Datas[6]}   {Datas[7]}   {Datas[8]}   {Datas[9]}   {Datas[10]}   {Datas[11]}")
+                    Datas=Line.strip().split("   ")
+                    Datas[3]=First_Name.upper()
+                    Datas[4]=Last_Name.upper()
+                    Updated_Lines.append("   ".join(Datas)+"\n")
                 else:
                     Updated_Lines.append(Line)
         else:
             print(f"...{Customer_Id} Is Not In Our Customer List!...")
     if Admin_Choice==3:       
-        Customer_Id=input("Enter The Current Customer Id:")
+        Customer_Id=input("Enter The Customer Id:")
         if Customer_Id in Customer_Ids:
             Address=input("Enter Your Address:")
             for Line in Lines:
                 if Customer_Id in Line.split("   "):
-                    Datas=Line.split("   ")
-                    Updated_Lines.append(f"{Datas[0]}   {Datas[1]}   {Datas[2]}   {Datas[3]}   {Datas[4]}   {Datas[5]}   {Datas[6]}   {Datas[7]}   {Datas[8]}   {Address}   {Datas[10]}   {Datas[11]}")
+                    Datas=Line.strip().split("   ")
+                    Datas[9]=Address.upper()
+                    Updated_Lines.append("   ".join(Datas)+"\n")
                 else:
                     Updated_Lines.append(Line)
         else:
             print(f"...{Customer_Id} Is Not In Our Customer List!...")
     if Admin_Choice==4:       
-        Customer_Id=input("Enter The Current Customer Id:")
+        Customer_Id=input("Enter The Customer Id:")
         if Customer_Id in Customer_Ids:
-            Mobile_No=int(input("Enter Your Mobile Number:"))
+            try:
+                Mobile_No=int(input("Enter Your Mobile Number:"))
+            except ValueError:
+                print("...Mobile Number Only In Numbers!...")
             for Line in Lines:
                 if Customer_Id in Line.split("   "):
-                    Datas=Line.split("   ")
-                    Updated_Lines.append(f"{Datas[0]}   {Datas[1]}   {Datas[2]}   {Datas[3]}   {Datas[4]}   {Datas[5]}   {Datas[6]}   {Datas[7]}   {Datas[8]}   {Datas[9]}   {str(Mobile_No)}   {Datas[11]}")
+                    Datas=Line.strip().split("   ")
+                    Datas[-2]=str(Mobile_No)
+                    Updated_Lines.append("   ".join(Datas)+"\n")
                 else:
                     Updated_Lines.append(Line)
         else:
             print(f"...{Customer_Id} Is Not In Our Customer List!...")
     if Admin_Choice==5:       
-        Customer_Id=input("Enter The Current Customer Id:")
+        Customer_Id=input("Enter The Customer Id:")
         if Customer_Id in Customer_Ids:
             G_Mail=input("Enter Your Mobile G-Mail Address:")
-            for Line in Lines:
-                if Customer_Id in Line.split("   "):
-                    Datas=Line.split("   ")
-                    Updated_Lines.append(f"{Datas[0]}   {Datas[1]}   {Datas[2]}   {Datas[3]}   {Datas[4]}   {Datas[5]}   {Datas[6]}   {Datas[7]}   {Datas[8]}   {Datas[9]}   {Datas[10]}   {G_Mail}\n")
-                else:
-                    Updated_Lines.append(Line)
+            if G_Mail[-9:]=="gmail.com":
+                for Line in Lines:
+                    if Customer_Id in Line.split("   "):
+                        Datas=Line.strip().split("   ")
+                        Datas[-1]=G_Mail
+                        Updated_Lines.append("   ".join(Datas)+"\n")
+                    else:
+                        Updated_Lines.append(Line)
+            else:
+                print("...G-Mail Is Not In Format!...")
         else:
             print(f"...{Customer_Id} Is Not In Our Customer List!...")
     else:
@@ -428,7 +504,6 @@ def Update_Customer():
     with open("Customer_Personal_Details.txt","w") as file:
         file.writelines(Updated_Lines)
     print("...Changes are Successfully Updated...")
-
 # --------------------------------------------------------------
 # Remove Customer-----------------------------------------------
 def Remove_Customer():
@@ -444,7 +519,12 @@ def Remove_Customer():
     Customer_Id=input("Enter The Current Customer Id:")
     Show_Account_Balance(Customer_Id)
     print("...If You Want Withdraw All Balance And Remove Customer Enter 1...\n...If You Want Go Back Admin Menu Enter Any Other Number...")
-    Admin_Choice=int(input("Enter Your Number:"))
+    while True:
+        try:
+            Admin_Choice=int(input("Enter Your Number:"))
+            break
+        except ValueError:
+            print("...Input Only Numbers!...\n...Try Again...")
     if Admin_Choice==1:
         for Account_Line in Account_Lines:
             if Customer_Id in Account_Line.split("   "):
@@ -488,9 +568,12 @@ def Remove_Account():
     Updated_Account_Lines=[]
     with open("Account_Details.txt","r") as file:
         Account_Lines=file.readlines()
-    Account_No=input("Enter The Account No:")
+    try:
+        Account_No=int(input("Enter The Account No:"))
+    except ValueError:
+        print("...Accont No Only In Numbers!...")
     for Account_Line in Account_Lines:
-            if Account_No in Account_Line.split("   "):
+            if str(Account_No) in Account_Line.split("   "):
                 Account_Detas=Account_Line.strip().split("   ")
                 Current_Balance=Account_Detas[-1]
                 Date_And_Time=datetime.now().strftime("%Y-%m-%d   %H:%M:%S")
@@ -510,7 +593,11 @@ def Transaction_HIstory(Customer_Id):
         Lines=file.readlines()
     while True:
         print("      1.All Transactions\n      2.Transactions By Account\n      3.Back To  Menu")
-        Transaction_Choice=int(input("Enter Your Choic:"))
+        try:
+            Transaction_Choice=int(input("Enter Your Choic:"))
+        except ValueError:
+            print("...Input Numbers Only!...")
+            continue
         if Transaction_Choice==1:
             for Line in Lines:
                 if Customer_Id in Line.split("   "):
@@ -518,7 +605,10 @@ def Transaction_HIstory(Customer_Id):
                     print(f"{Datas_in_Line[1]}   {Datas_in_Line[2]}   {Datas_in_Line[3]}   {Datas_in_Line[4]}   {Datas_in_Line[5]}")
         elif Transaction_Choice==2:
             Show_Customer_Accounts(Customer_Id)
-            Accont_No=int(input("Enter Your Account Number:"))
+            try:
+                Accont_No=int(input("Enter Your Account Number:"))
+            except ValueError:
+                print("...Accont Number Only In Numbers!...")
             for Line in Lines:
                 if str(Accont_No) in Line.split("   "):
                     print(f"{Datas_in_Line[1]}   {Datas_in_Line[2]}   {Datas_in_Line[3]}   {Datas_in_Line[4]}   {Datas_in_Line[5]}")
@@ -526,7 +616,6 @@ def Transaction_HIstory(Customer_Id):
             break
         else:
             print("...Invalid Input...")
-
 # --------------------------------------------------------------
 # Admin Transaction History-------------------------------------
 def Admin_Transaction_History():
@@ -534,37 +623,46 @@ def Admin_Transaction_History():
         Lines=file.readlines()
     while True:
         print("   1.View Transaction History By Date\n   2.View Transaction History By Customer\n   3.View Transaction History By Account No\n   4.Back To Main Menu")
-        Admin_Choice=int(input("Enter Your Choice:"))
+        try:
+            Admin_Choice=int(input("Enter Your Choice:"))
+        except ValueError:
+            print("...Input Numbers Only!...")
+            continue
         if Admin_Choice==1:
-            Date=input("Enter The Date:")
+            Date=input("Enter The Date(Eg:-Year/mm/dd):")
             for Line in Lines:
                 if Date in Line.split("   "):
-                    Datas_in_Line=Line.split("   ")
+                    Datas_in_Line=Line.strip().split("   ")
                     print(f"{Datas_in_Line[1]}   {Datas_in_Line[2]}   {Datas_in_Line[3]}   {Datas_in_Line[4]}   {Datas_in_Line[5]}")
             else:
                 print("...No Transaction Available In This Date...")
-        if Admin_Choice==2:
-            Customer_Id=Getting_Customer_Id()
+        elif Admin_Choice==2:
+            Customer_Id=input("Enter The Customer Id:")
             Transaction_HIstory(Customer_Id)
         elif Admin_Choice==3:
-            Accont_No=int(input("Enter Your Account Number:"))
+            try:
+                Accont_No=int(input("Enter Your Account Number:"))
+            except ValueError:
+                print("...Accont Number Only In Numbers!...")
+                continue
             for Line in Lines:
                 if Accont_No in Line.split("   "):
-                    Datas_in_Line=Line.split("   ")
+                    Datas_in_Line=Line.strip().split("   ")
                     print(f"{Datas_in_Line[1]}   {Datas_in_Line[2]}   {Datas_in_Line[3]}   {Datas_in_Line[4]}   {Datas_in_Line[5]}")
         elif Admin_Choice==4:
             break
         else:
             print("...Invalid Input...")
-
-            
 # --------------------------------------------------------------
 # Admin-Menu-Driven Interface-----------------------------------
-
 def Admin_Menu():
+    print(".....Admin Menu.....")
     while True:
-        print("1.Customer Registration\n2.Account Creation\n3.Deposite Money\n4.Withdraw Money\n5.View Customer Details\n6.Check Account Balance\n7.View Transaction History\n8.Update Customer Details\n9.Remove Customer\n10.Remove Account")
-        Admin_Response=int(input("Enter Your Choice:"))
+        print("1.Customer Registration\n2.Account Creation\n3.Deposite Money\n4.Withdraw Money\n5.View Customer Details\n6.Check Account Balance\n7.View Transaction History\n8.Update Customer Details\n9.Remove Customer\n10.Remove Account\n11.Exit")
+        try:
+            Admin_Response=int(input("Enter Your Choice:"))
+        except ValueError:
+            print("...Numbers Only!...")
         if Admin_Response==1:
             Customer_Details_Save()
         elif Admin_Response==2:
@@ -586,13 +684,20 @@ def Admin_Menu():
             Remove_Customer()
         elif Admin_Response==10:
             Remove_Account()
+        elif Admin_Response==11:
+            break
+        else:
+            print("...Invalid Input!...")
 # --------------------------------------------------------------
 # Customer-Menu-Driven Interface--------------------------------
-
 def Customer_Menu(Datas):
+    print(".....Customer Menu.....")
     while True:
         print("1.Change UserName Or PassCode\n2.Deposite Money\n3.Withdraw Ammount\n4.Check Balance\n5.Transaction History\n6.Exit")
-        Customer_Response=int(input("Enter Your Choice:"))
+        try:
+            Customer_Response=int(input("Enter Your Choice:"))
+        except ValueError:
+            print("...Numbers Only!...")
         if Customer_Response==1:
             Changing_Username_Password()
             break   
@@ -609,35 +714,30 @@ def Customer_Menu(Datas):
         elif Customer_Response==6:
             break
         else:
-            print("...Invalid Input...")
-
-            
+            print("...Invalid Input!...")    
 # --------------------------------------------------------------
 # Main_Menu-----------------------------------------------------
-
 while True:
-    import os
     Customer_file="Customer_Personal_Details.txt"
     if os.path.exists(Customer_file):
-        print("...Welcome Mini Banking...")
+        print(".....Welcome Mini Banking.....")
         User_Name=input("Enter Your Username:")
         Pass_Code=int(input("Enter Your Passcode:"))
         if User_Name=="admin" and Pass_Code==1234:
             Admin_Menu()
         with open("Login_Informations.txt","r") as file:
             Lines=file.readlines()
-            for Line in Lines:
-                Datas=Line.strip().split("   ")
-                if User_Name==Datas[-2] and str(Pass_Code)==Datas[-1]:
-                    Customer_Menu(Datas)
-                    break
+        for Line in Lines:
+            Datas=Line.strip().split("   ")
+            print(Datas[-2])
+            print(Datas[-1])
+            if User_Name==Datas[-2] and str(Pass_Code)==Datas[-1]:
+                Customer_Menu(Datas)
+                break
             else:
-                print("Incorrect UserName Or PassCode")
-            
-        
-        
+                print("Incorrect UserName Or PassCode")  
     else:
-        print("...Welcome Mini Banking...")
+        print(".....Welcome Mini Banking.....")
         print("User_Name:-admin , pass code:-1234")
         User_Name=input("Enter Your Username:")
         Pass_Code=int(input("Enter Your Passcode:"))
@@ -645,5 +745,4 @@ while True:
             Admin_Menu()
         else:
             print("...Incorrect User_Name! or Pass_Code!...")
-
-# --------------------------------------------------------------
+# # --------------------------------------------------------------
