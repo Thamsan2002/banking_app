@@ -408,15 +408,22 @@ def View_Customer_Detailes():
 # --------------------------------------------------------------
 # Show Account Balance------------------------------------------
 def Show_Account_Balance(Customer_Id):
+    All_Accounts=[]
     Customer_IdS=[]
+    My_Accounts=[]
+    Accounts_Balances={}
     with open("Account_Details.txt","r") as file:
         Lines=file.readlines()
     for Line in Lines:
+        All_Accounts.append(Line.split("   ")[3])
         Customer_IdS.append(Line.split("   ")[2])
+        Accounts_Balances[Line.split("   ")[3]]=Line.split("   ")[4]
         if Customer_Id in Line.split("   "):
+            My_Accounts.append(Line.split("   ")[3])
             print(f"Your Account {Line.split("   ")[3]} Balance is:{Line.split("   ")[4]}")
     if Customer_Id not in Customer_IdS:
         print(f"...{Customer_Id} Is Not In Our Customer List!...")
+    return My_Accounts,Accounts_Balances,All_Accounts,Lines
 # --------------------------------------------------------------
 # Update Customer-----------------------------------------------
 def Update_Customer():
@@ -667,6 +674,62 @@ def Admin_Transaction_History():
         else:
             print("...Invalid Input...")
 # --------------------------------------------------------------
+# Customer Transfer Account-------------------------------------
+def Customer_Transfer_Account(Customer_Id):
+    Updated_Lines=[]
+    date_and_time=datetime.now()
+    DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
+    My_Accounts,Accounts_Balances,All_Accounts,Lines=Show_Account_Balance(Customer_Id)
+    while True:
+        try:
+            Select_Account=int(input("Enter Your Account Number:"))
+        except ValueError:
+            print("...Account Number Only In Numbers!...")
+            continue
+        if str(Select_Account) in My_Accounts:
+            try:
+                Transfer_Money=float(input("Enter The Transfer Money:"))
+            except ValueError:
+                print("...Transfer Money Only In Numbers!...")
+                continue
+            if Transfer_Money>0:
+                if str(Transfer_Money)<=Accounts_Balances[str(Select_Account)]:
+                    try:
+                        Transfer_Account=int(input("Enter The Transfer Account Number:"))
+                    except ValueError:
+                        print("...Account Number Only In Numbers!...")
+                        continue
+                    if str(Transfer_Account) in All_Accounts:
+                        for Line in Lines:
+                            if str(Select_Account) in Line.split("   "):
+                                Sender_data=Line.strip().split("   ")
+                                New_Sender_Balance=str(float(Accounts_Balances[str(Select_Account)])-Transfer_Money)
+                                Sender_data[-1]=New_Sender_Balance
+                                Updated_Lines.append("   ".join(Sender_data)+"\n")
+                                with open("Transaction_History.txt","a") as file:
+                                    file.write(f"{Sender_data[2]}   {DATE_AND_TIME}   {str(Select_Account)}   -{Transfer_Money}   {New_Sender_Balance}\n")
+                            elif str(Transfer_Account) in Line.split("   "):
+                                Receiver_data=Line.strip().split("   ")
+                                New_Reciver_Balance=str(float(Accounts_Balances[str(Transfer_Account)])+Transfer_Money)
+                                Receiver_data[-1]=New_Reciver_Balance
+                                Updated_Lines.append("   ".join(Receiver_data)+"\n")
+                                with open("Transaction_History.txt","a") as file:
+                                    file.write(f"{Receiver_data[2]}   {DATE_AND_TIME}   {str(Transfer_Account)}   +{Transfer_Money}   {New_Reciver_Balance}\n")
+                            else:
+                                Updated_Lines.append(Line)
+                        break
+                    else:
+                        print("...Enter The Correct Accout Number!...")    
+                else:
+                    print("...Insuffience Balance!...")
+            else:
+                print("...Enter The Positive Amount Only!...")
+        else:
+            print("...Enter Correct Your Account Number!...")
+    with open("Account_Details.txt","w") as file:
+        file.writelines(Updated_Lines)
+    print("...Transaction Successful...")
+# --------------------------------------------------------------
 # Admin-Menu-Driven Interface-----------------------------------
 def Admin_Menu(Datas):
     print(".....Admin Menu.....")
@@ -704,9 +767,10 @@ def Admin_Menu(Datas):
 # --------------------------------------------------------------
 # Customer-Menu-Driven Interface--------------------------------
 def Customer_Menu(Datas):
+    Customer_Id=Datas[0]
     print(".....Customer Menu.....")
     while True:
-        print("1.Change UserName Or PassCode\n2.Deposite Money\n3.Withdraw Ammount\n4.Check Balance\n5.Transaction History\n6.Exit")
+        print("1.Change UserName Or PassCode\n2.Deposite Money\n3.Withdraw Ammount\n4.Check Balance\n5.Transaction History\n6.Transfer Credit\n7.Exit")
         try:
             Customer_Response=int(input("Enter Your Choice:"))
         except ValueError:
@@ -719,12 +783,12 @@ def Customer_Menu(Datas):
         elif Customer_Response==3:
             Customer_Withdrawal(Datas)
         elif Customer_Response==4:
-            Customer_Id=Datas[0]
             Show_Account_Balance(Customer_Id)
         elif Customer_Response==5:
-            Customer_Id=Datas[0]
             Transaction_HIstory(Customer_Id)
         elif Customer_Response==6:
+            Customer_Transfer_Account(Customer_Id)
+        elif Customer_Response==7:
             break
         else:
             print("...Invalid Input!...")    
