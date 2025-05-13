@@ -159,54 +159,52 @@ def Changing_Username_Password():
                         print("This UserName Already Taken\nTry Another One")
                 else:
                     while True:
-                        try:
-                            Pass_Code=int(input("Enter Your Passcode:"))
-                        except ValueError:
-                            print("...PassCode Only Numbers!...")
-                            continue
-                        if str(Pass_Code)==Datas[-1]:
-                            for Line in Lines:
-                                if Customer_Id in Line.split("   "):
-                                    Read_Lines.append(f"{Customer_Id}   {New_Username}   {Old_Passcode}")
-                                else:
-                                    Read_Lines.append(Line)
-                            with open("Login_Informations.txt","w")as file:
-                                file.writelines(Read_Lines)
-                            print(f"...Username Successfully Changed...\nYour New UserName Is:{New_Username}\n...please Login With New UserName...")
-                            break
+                        Pass_Code=input("Enter Your Passcode:")
+                        if Pass_Code.isdigit():
+                            if Pass_Code==Datas[-1]:
+                                for Line in Lines:
+                                    if Customer_Id in Line.split("   "):
+                                        Read_Lines.append(f"{Customer_Id}   {New_Username}   {Old_Passcode}")
+                                    else:
+                                        Read_Lines.append(Line)
+                                with open("Login_Informations.txt","w")as file:
+                                    file.writelines(Read_Lines)
+                                print(f"...Username Successfully Changed...\nYour New UserName Is:{New_Username}\n...please Login With New UserName...")
+                                break
+                            else:
+                                print("...PassCode Not Matching!...\n...Try Again..")
                         else:
-                            print("...PassCode Not Matching!...\n...Try Again..")
+                            print("...PassCode Only Numbers!...")
                     break
             break
         elif Choice==2:
             while True:
-                try:
-                    New_Passcode1=int(input("Enter Your New Passcode:"))
-                    New_Passcode2=int(input("Re Your New Passcode:"))
-                except ValueError:
-                    print("...PassCode Only Numbers!...")
-                    continue
-                if New_Passcode1==New_Passcode2:
-                    while True:
-                        try:
-                            Pass_Code=int(input("Enter Your Old Passcode:"))
-                        except ValueError:
-                            print("...PassCode Only Numbers!...")
-                        if str(Pass_Code)==Datas[-1]:
-                            for Line in Lines:
-                                if Customer_Id in Line.split("   "):
-                                    Read_Lines.append(f"{Customer_Id}   {Old_Username}   {New_Passcode1}\n")
-                                else:
-                                    Read_Lines.append(Line)
-                            with open("Login_Informations.txt","w")as file:
-                                file.writelines(Read_Lines)
-                            print(f"...PassCode Successfully Changed...\nYour New PassCode: {New_Passcode1}\n...please Login With New PassCode...")
+                    New_Passcode1=input("Enter Your New Passcode:")
+                    New_Passcode2=input("Re Your New Passcode:")
+                    if New_Passcode1.isdigit() and New_Passcode2.isdigit():
+                        if New_Passcode1==New_Passcode2:
+                            while True:
+                                    Pass_Code=input("Enter Your Old Passcode:")
+                                    if Pass_Code.isdigit():
+                                        if Pass_Code==Datas[-1]:
+                                            for Line in Lines:
+                                                if Customer_Id in Line.split("   "):
+                                                    Read_Lines.append(f"{Customer_Id}   {Old_Username}   {New_Passcode1}\n")
+                                                else:
+                                                    Read_Lines.append(Line)
+                                            with open("Login_Informations.txt","w")as file:
+                                                file.writelines(Read_Lines)
+                                            print(f"...PassCode Successfully Changed...\nYour New PassCode: {New_Passcode1}\n...please Login With New PassCode...")
+                                            break
+                                        else:
+                                            print("...Your PassCode Is Wrong!...\n...Try Again..")
+                                    else:
+                                        print("...PassCode Only Numbers!...")
                             break
                         else:
-                            print("...Your PassCode Is Wrong!...\n...Try Again..")
-                    break
-                else:
-                    print("...PassCode Not Matching!...\n...Try Again...")
+                            print("...PassCode Not Matching!...\n...Try Again...")
+                    else:
+                        print("...PassCode Only Numbers!...")
             break
         elif Choice==3:
             while True:
@@ -215,32 +213,32 @@ def Changing_Username_Password():
                         print("This UserName Already Taken\nTry Another One")
                 else:
                     while True:
-                        try:
                             New_Passcode1=input("Enter Your New Passcode:")
                             New_Passcode2=input("Re Your New Passcode:")
-                        except ValueError:
-                            print("...PassCode Only Numbers!...")
-                        if New_Passcode1==New_Passcode2:
-                            while True:
-                                try:
-                                    Pass_Code=int(input("Enter Your Old Passcode:"))
-                                except ValueError:
-                                    print("...PassCode Only Numbers!...")
-                                if str(Pass_Code)==Datas[-1]:
-                                    for Line in Lines:
-                                        if Customer_Id in Line.split("   "):
-                                            Read_Lines.append(f"{Customer_Id}   {New_Username}   {New_Passcode1}\n")
-                                        else:
-                                            Read_Lines.append(Line)
-                                    with open("Login_Informations.txt","w")as file:
-                                        file.writelines(Read_Lines)
-                                    print(f"...Username & PassCode Successfully Changed...\nYour New UserName Is:{New_Username}\nYour New PassCode: {New_Passcode1}\n...please Login With New UserName...")
+                            if New_Passcode1.isdigit() and New_Passcode2.isdigit():
+                                if New_Passcode1==New_Passcode2:
+                                    while True:
+                                            Pass_Code=input("Enter Your Old Passcode:")
+                                            if Pass_Code.isdigit():
+                                                if Pass_Code==Datas[-1]:
+                                                    for Line in Lines:
+                                                        if Customer_Id in Line.split("   "):
+                                                            Read_Lines.append(f"{Customer_Id}   {New_Username}   {New_Passcode1}\n")
+                                                        else:
+                                                            Read_Lines.append(Line)
+                                                    with open("Login_Informations.txt","w")as file:
+                                                        file.writelines(Read_Lines)
+                                                    print(f"...Username & PassCode Successfully Changed...\nYour New UserName Is:{New_Username}\nYour New PassCode: {New_Passcode1}\n...please Login With New UserName...")
+                                                    break
+                                                else:
+                                                    print("...Your PassCode Is Wrong!...\n...Try Again...")
+                                            else:
+                                                print("...PassCode Only Numbers!...")
                                     break
                                 else:
-                                    print("...Your PassCode Is Wrong!...\n...Try Again...")
-                            break
-                        else:
-                            print("...PassCode Not Matching!...\n...Try Again...")
+                                    print("...PassCode Not Matching!...\n...Try Again...")
+                            else:
+                                print("...PassCode Only Numbers!...")
                     break
             break
         elif Choice==4:
@@ -260,29 +258,30 @@ def Deposite(Datas,lines,Accounts):
         except ValueError:
             print("...Deposite Money Only In Numbers!...")
         if Deposite_Money>0:
-            try:
-                Pass_Code=int(input("Enter Your Passcode:"))
-            except ValueError:
-                print("...PassCode Only Numbers!...")
-            if str(Pass_Code)==Datas[-1]:
-                updated_line=[]
-                for Needed_line in lines:
-                    if str(Accont_No) in Needed_line:
-                        Datas_in_line=Needed_line.split("   ")
-                        Current_balance=Datas_in_line[4]
-                        New_balance=str(float(Current_balance)+Deposite_Money)
-                        Datas_in_line[4]=New_balance
-                        updated_line.append("   ".join(Datas_in_line)+"\n")
-                        date_and_time=datetime.now()
-                        DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
-                        with open("Transaction_History.txt","a") as file:
-                            file.write(f"{Datas_in_line[2]}   {DATE_AND_TIME}   {Datas_in_line[3]}   +{Deposite_Money}   {New_balance}\n")
-                    else:
-                        updated_line.append(Needed_line)
-                with open("Account_Details.txt","w") as file:
-                    file.writelines(updated_line)
+            Pass_Code=input("Enter Your Passcode:")
+            if Pass_Code.isdigit():
+                if Pass_Code==Datas[-1]:
+                    updated_line=[]
+                    for Needed_line in lines:
+                        if str(Accont_No) in Needed_line:
+                            Datas_in_line=Needed_line.split("   ")
+                            Current_balance=Datas_in_line[4]
+                            New_balance=str(float(Current_balance)+Deposite_Money)
+                            Datas_in_line[4]=New_balance
+                            updated_line.append("   ".join(Datas_in_line)+"\n")
+                            date_and_time=datetime.now()
+                            DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
+                            with open("Transaction_History.txt","a") as file:
+                                file.write(f"{Datas_in_line[2]}   {DATE_AND_TIME}   {Datas_in_line[3]}   +{Deposite_Money}   {New_balance}\n")
+                        else:
+                            updated_line.append(Needed_line)
+                    with open("Account_Details.txt","w") as file:
+                        file.writelines(updated_line)
+                    print(f"...Deposited Successfully...\n...Your New Balance Is:{New_balance}")
+                else:
+                    print("...Your PassCode Is Wrong...")
             else:
-                print("...Your PassCode Is Wrong...")
+                print("...Enter PassCode Numbers Only!...")
         else:
             print("...Enter a Valid Amount!...")
     else:
@@ -320,32 +319,33 @@ def Withdrawal(Datas,lines,Accounts):
         except ValueError:
             print("...Withdrawal Money Only In Numbers!...")
         if Withdrawal_Money>0:
-            try:
-                Pass_Code=int(input("Enter Your Passcode:"))
-            except ValueError:
-                print("...PassCode Only Numbers!...")
-            if str(Pass_Code)==Datas[-1]:
-                updated_line=[]
-                for Needed_line in lines:
-                    if str(Accont_No) in Needed_line:
-                        Datas_in_line=Needed_line.split("   ")
-                        Current_balance=Datas_in_line[4]
-                        if Withdrawal_Money<=float(Current_balance):
-                            New_balance=str(float(Current_balance)-Withdrawal_Money)
-                            Datas_in_line[4]=New_balance
-                            updated_line.append("   ".join(Datas_in_line)+"\n")
-                            date_and_time=datetime.now()
-                            DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
-                            with open("Transaction_History.txt","a") as file:
-                                file.write(f"{Datas_in_line[2]}   {DATE_AND_TIME}   {Datas_in_line[3]}   -{Withdrawal_Money}   {New_balance}\n")
+            Pass_Code=input("Enter Your Passcode:")
+            if Pass_Code.isdigit():
+                if Pass_Code==Datas[-1]:
+                    updated_line=[]
+                    for Needed_line in lines:
+                        if str(Accont_No) in Needed_line:
+                            Datas_in_line=Needed_line.split("   ")
+                            Current_balance=Datas_in_line[4]
+                            if Withdrawal_Money<=float(Current_balance):
+                                New_balance=str(float(Current_balance)-Withdrawal_Money)
+                                Datas_in_line[4]=New_balance
+                                updated_line.append("   ".join(Datas_in_line)+"\n")
+                                date_and_time=datetime.now()
+                                DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
+                                with open("Transaction_History.txt","a") as file:
+                                    file.write(f"{Datas_in_line[2]}   {DATE_AND_TIME}   {Datas_in_line[3]}   -{Withdrawal_Money}   {New_balance}\n")
+                            else:
+                                print("...Insiffience Balance...")
                         else:
-                            print("...Insiffience Balance...")
-                    else:
-                        updated_line.append(Needed_line)
-                with open("Account_Details.txt","w") as file:
-                    file.writelines(updated_line)
+                            updated_line.append(Needed_line)
+                    with open("Account_Details.txt","w") as file:
+                        file.writelines(updated_line)
+                    print(f"...Withdrawed Successfully...\n...Your New Balance Is:{New_balance}")
+                else:
+                    print("...Your PassCode Is Wrong...")
             else:
-                print("...Your PassCode Is Wrong...")
+                print("...Enter PassCode Numbers Only!...")
         else:
             print("...Enter a Valid Amount!...")
     else:
@@ -406,12 +406,14 @@ def View_Customer_Detailes():
 # --------------------------------------------------------------
 # Show Account Balance------------------------------------------
 def Show_Account_Balance(Customer_Id):
+    Customer_IdS=[]
     with open("Account_Details.txt","r") as file:
         Lines=file.readlines()
     for Line in Lines:
+        Customer_IdS.append(Line.split("   ")[2])
         if Customer_Id in Line.split("   "):
             print(f"Your Account {Line.split("   ")[3]} Balance is:{Line.split("   ")[4]}")
-    else:
+    if Customer_Id not in Customer_IdS:
         print(f"...{Customer_Id} Is Not In Our Customer List!...")
 # --------------------------------------------------------------
 # Update Customer-----------------------------------------------
@@ -611,6 +613,7 @@ def Transaction_HIstory(Customer_Id):
                 print("...Accont Number Only In Numbers!...")
             for Line in Lines:
                 if str(Accont_No) in Line.split("   "):
+                    Datas_in_Line=Line.split("   ")
                     print(f"{Datas_in_Line[1]}   {Datas_in_Line[2]}   {Datas_in_Line[3]}   {Datas_in_Line[4]}   {Datas_in_Line[5]}")
         elif Transaction_Choice==3:
             break
@@ -655,7 +658,7 @@ def Admin_Transaction_History():
             print("...Invalid Input...")
 # --------------------------------------------------------------
 # Admin-Menu-Driven Interface-----------------------------------
-def Admin_Menu():
+def Admin_Menu(Datas):
     print(".....Admin Menu.....")
     while True:
         print("1.Customer Registration\n2.Account Creation\n3.Deposite Money\n4.Withdraw Money\n5.View Customer Details\n6.Check Account Balance\n7.View Transaction History\n8.Update Customer Details\n9.Remove Customer\n10.Remove Account\n11.Exit")
@@ -668,9 +671,9 @@ def Admin_Menu():
         elif Admin_Response==2:
             Account_Creation()
         elif Admin_Response==3:
-            Admin_Deposite("1234")
+            Admin_Deposite(Datas)
         elif Admin_Response==4:
-            Admin_Withdrawal("1234")
+            Admin_Withdrawal(Datas)
         elif Admin_Response==5:
             View_Customer_Detailes()
         elif Admin_Response==6:
@@ -706,10 +709,10 @@ def Customer_Menu(Datas):
         elif Customer_Response==3:
             Customer_Withdrawal(Datas)
         elif Customer_Response==4:
-            Customer_Id=Getting_Customer_Id()
+            Customer_Id=Datas[0]
             Show_Account_Balance(Customer_Id)
         elif Customer_Response==5:
-            Customer_Id=Getting_Customer_Id()
+            Customer_Id=Datas[0]
             Transaction_HIstory(Customer_Id)
         elif Customer_Response==6:
             break
@@ -722,27 +725,35 @@ while True:
     if os.path.exists(Customer_file):
         print(".....Welcome Mini Banking.....")
         User_Name=input("Enter Your Username:")
-        Pass_Code=int(input("Enter Your Passcode:"))
-        if User_Name=="admin" and Pass_Code==1234:
-            Admin_Menu()
-        with open("Login_Informations.txt","r") as file:
-            Lines=file.readlines()
-        for Line in Lines:
-            Datas=Line.strip().split("   ")
-            print(Datas[-2])
-            print(Datas[-1])
-            if User_Name==Datas[-2] and str(Pass_Code)==Datas[-1]:
-                Customer_Menu(Datas)
-                break
-            else:
-                print("Incorrect UserName Or PassCode")  
+        Pass_Code=input("Enter Your Passcode:")
+        if Pass_Code.isdigit():
+            if User_Name=="admin" and Pass_Code=="1234":
+                Datas=["admin","1234"]
+                Admin_Menu(Datas)
+            with open("Login_Informations.txt","r") as file:
+                Lines=file.readlines()
+            for Line in Lines:
+                Datas=Line.strip().split("   ")
+                print(Datas[-2])
+                print(Datas[-1])
+                if User_Name==Datas[-2] and Pass_Code==Datas[-1]:
+                    Customer_Menu(Datas)
+                    break
+                else:
+                    print("...Incorrect UserName Or PassCode!...")
+        else:
+            print("...Enter Passcode Numbers Only!...")
     else:
         print(".....Welcome Mini Banking.....")
         print("User_Name:-admin , pass code:-1234")
         User_Name=input("Enter Your Username:")
-        Pass_Code=int(input("Enter Your Passcode:"))
-        if User_Name=="admin" and Pass_Code==1234:
-            Admin_Menu()
+        Pass_Code=input("Enter Your Passcode:")
+        if Pass_Code.isdigit():
+            if User_Name=="admin" and Pass_Code=="1234":
+                Datas=["admin","1234"]
+                Admin_Menu(Datas)
+            else:
+                print("...Incorrect User_Name! or Pass_Code!...")
         else:
-            print("...Incorrect User_Name! or Pass_Code!...")
+            print("...Enter Passcode Numbers Only!...")
 # # --------------------------------------------------------------
