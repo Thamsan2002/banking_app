@@ -674,12 +674,8 @@ def Admin_Transaction_History():
         else:
             print("...Invalid Input...")
 # --------------------------------------------------------------
-# Customer Transfer Account-------------------------------------
-def Customer_Transfer_Account(Customer_Id):
-    Updated_Lines=[]
-    date_and_time=datetime.now()
-    DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
-    My_Accounts,Accounts_Balances,All_Accounts,Lines=Show_Account_Balance(Customer_Id)
+# Transfer Account Amount---------------------------------------
+def Transfer_Account_Amount(My_Accounts,Accounts_Balances,All_Accounts,Lines,Datas):
     while True:
         try:
             Select_Account=int(input("Enter Your Account Number:"))
@@ -687,6 +683,8 @@ def Customer_Transfer_Account(Customer_Id):
             print("...Account Number Only In Numbers!...")
             continue
         if str(Select_Account) in My_Accounts:
+            Updated_Lines=[]
+            DATE_AND_TIME=datetime.now().strftime("%Y-%m-%d   %H:%M:%S")
             try:
                 Transfer_Money=float(input("Enter The Transfer Money:"))
             except ValueError:
@@ -700,24 +698,31 @@ def Customer_Transfer_Account(Customer_Id):
                         print("...Account Number Only In Numbers!...")
                         continue
                     if str(Transfer_Account) in All_Accounts:
-                        for Line in Lines:
-                            if str(Select_Account) in Line.split("   "):
-                                Sender_data=Line.strip().split("   ")
-                                New_Sender_Balance=str(float(Accounts_Balances[str(Select_Account)])-Transfer_Money)
-                                Sender_data[-1]=New_Sender_Balance
-                                Updated_Lines.append("   ".join(Sender_data)+"\n")
-                                with open("Transaction_History.txt","a") as file:
-                                    file.write(f"{Sender_data[2]}   {DATE_AND_TIME}   {str(Select_Account)}   -{Transfer_Money}   {New_Sender_Balance}\n")
-                            elif str(Transfer_Account) in Line.split("   "):
-                                Receiver_data=Line.strip().split("   ")
-                                New_Reciver_Balance=str(float(Accounts_Balances[str(Transfer_Account)])+Transfer_Money)
-                                Receiver_data[-1]=New_Reciver_Balance
-                                Updated_Lines.append("   ".join(Receiver_data)+"\n")
-                                with open("Transaction_History.txt","a") as file:
-                                    file.write(f"{Receiver_data[2]}   {DATE_AND_TIME}   {str(Transfer_Account)}   +{Transfer_Money}   {New_Reciver_Balance}\n")
+                        Pass_Code=input("Enter Your PassCode To Continue:")
+                        if Pass_Code.isdigit():
+                            if Pass_Code==Datas[-1]:
+                                for Line in Lines:
+                                    if str(Select_Account) in Line.split("   "):
+                                        Sender_data=Line.strip().split("   ")
+                                        New_Sender_Balance=str(float(Accounts_Balances[str(Select_Account)])-Transfer_Money)
+                                        Sender_data[-1]=New_Sender_Balance
+                                        Updated_Lines.append("   ".join(Sender_data)+"\n")
+                                        with open("Transaction_History.txt","a") as file:
+                                            file.write(f"{Sender_data[2]}   {DATE_AND_TIME}   {str(Select_Account)}   -{Transfer_Money}   {New_Sender_Balance}\n")
+                                    elif str(Transfer_Account) in Line.split("   "):
+                                        Receiver_data=Line.strip().split("   ")
+                                        New_Reciver_Balance=str(float(Accounts_Balances[str(Transfer_Account)])+Transfer_Money)
+                                        Receiver_data[-1]=New_Reciver_Balance
+                                        Updated_Lines.append("   ".join(Receiver_data)+"\n")
+                                        with open("Transaction_History.txt","a") as file:
+                                            file.write(f"{Receiver_data[2]}   {DATE_AND_TIME}   {str(Transfer_Account)}   +{Transfer_Money}   {New_Reciver_Balance}\n")
+                                    else:
+                                        Updated_Lines.append(Line)
+                                break
                             else:
-                                Updated_Lines.append(Line)
-                        break
+                                print("...Incorrect PassCode!...")
+                        else:
+                            print("...PassCode Numers Only!...")
                     else:
                         print("...Enter The Correct Accout Number!...")    
                 else:
@@ -730,11 +735,22 @@ def Customer_Transfer_Account(Customer_Id):
         file.writelines(Updated_Lines)
     print("...Transaction Successful...")
 # --------------------------------------------------------------
+# Admin Trasnsfer Account---------------------------------------
+def Admin_Transfer_Account(Datas):
+    All_Accounts=[]
+    Accounts_Balances={}
+    with open("Account_Details.txt","r") as file:
+        Lines=file.readlines()
+    for Line in Lines:
+        All_Accounts.append(Line.split("   ")[3])
+        Accounts_Balances[Line.split("   ")[3]]=Line.split("   ")[4]
+    Transfer_Account_Amount(All_Accounts,Accounts_Balances,All_Accounts,Lines,Datas)
+# --------------------------------------------------------------
 # Admin-Menu-Driven Interface-----------------------------------
 def Admin_Menu(Datas):
     print(".....Admin Menu.....")
     while True:
-        print("1.Customer Registration\n2.Account Creation\n3.Deposite Money\n4.Withdraw Money\n5.View Customer Details\n6.Check Account Balance\n7.View Transaction History\n8.Update Customer Details\n9.Remove Customer\n10.Remove Account\n11.Exit")
+        print("1.Customer Registration\n2.Account Creation\n3.Deposite Money\n4.Withdraw Money\n5.View Customer Details\n6.Check Account Balance\n7.View Transaction History\n8.Update Customer Details\n9.Remove Customer\n10.Remove Account\n11.Trasfer Account Credit\n12.Exit")
         try:
             Admin_Response=int(input("Enter Your Choice:"))
         except ValueError:
@@ -761,6 +777,8 @@ def Admin_Menu(Datas):
         elif Admin_Response==10:
             Remove_Account()
         elif Admin_Response==11:
+            Admin_Transfer_Account(Datas)
+        elif Admin_Response==12:
             break
         else:
             print("...Invalid Input!...")
@@ -770,7 +788,7 @@ def Customer_Menu(Datas):
     Customer_Id=Datas[0]
     print(".....Customer Menu.....")
     while True:
-        print("1.Change UserName Or PassCode\n2.Deposite Money\n3.Withdraw Ammount\n4.Check Balance\n5.Transaction History\n6.Transfer Credit\n7.Exit")
+        print("1.Change UserName Or PassCode\n2.Deposite Money\n3.Withdraw Ammount\n4.Check Balance\n5.Transaction History\n6.Transfer Account Credit\n7.Exit")
         try:
             Customer_Response=int(input("Enter Your Choice:"))
         except ValueError:
@@ -787,7 +805,8 @@ def Customer_Menu(Datas):
         elif Customer_Response==5:
             Transaction_HIstory(Customer_Id)
         elif Customer_Response==6:
-            Customer_Transfer_Account(Customer_Id)
+            My_Accounts,Accounts_Balances,All_Accounts,Lines=Show_Account_Balance(Customer_Id)
+            Transfer_Account_Amount(My_Accounts,Accounts_Balances,All_Accounts,Lines,Datas)
         elif Customer_Response==7:
             break
         else:
