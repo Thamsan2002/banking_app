@@ -62,7 +62,7 @@ def Account_Creation():
                 try:
                     Initial_Balance=float(input("Enter Your Deposite Amount:"))
                     break
-                except:
+                except ValueError:
                     print("...Enter The Correct Amount!...")
             date_and_time=datetime.now()
             DATE_AND_TIME=date_and_time.strftime("%Y-%m-%d   %H:%M:%S")
@@ -102,7 +102,7 @@ def Account_Creation():
                             file.write(f"{Customer_Id}   {User_Name}   {pass_code}\n")
                         print(f"...Successfully Account Created!...\n...Your Account Number Is:{New_Account_no}...\n...Your UserName Is:{User_Name}...\n...Your PassCode Is:{pass_code}...")
                 else:
-                    print("...Successfully Account Created!...")
+                    print(f"...Successfully Account Created!...\n...Your Account Number Is:{New_Account_no}...")
             else:
                 New_Account_no=10000
                 with open("Account_Details.txt","a") as file:
@@ -114,15 +114,6 @@ def Account_Creation():
                 file.write(f"{Customer_Id}   {DATE_AND_TIME}   {New_Account_no}   +{Initial_Balance}   {Initial_Balance}\n")
     if Customer_Id not in Customer_IdS:
         print("...Incorrect Customer Id!...")
-# --------------------------------------------------------------
-# Getting Customer Id-------------------------------------------
-def Getting_Customer_Id():
-    with open("Login_Informations.txt","r") as file:
-        Lines=file.readlines()
-    for Line in Lines:
-        if User_Name in Line:
-            Customer_Id=Line.split("   ")[0]
-    return Customer_Id
 # --------------------------------------------------------------
 # Show Customer Accounts----------------------------------------
 def Show_Customer_Accounts(Customer_Id):
@@ -136,8 +127,7 @@ def Show_Customer_Accounts(Customer_Id):
     return lines,Accounts
 # --------------------------------------------------------------
 # Changing Username&Password------------------------------------
-def Changing_Username_Password():
-    Customer_Id=Getting_Customer_Id()
+def Changing_Username_Password(Customer_Id):
     Read_Lines=[]
     All_Usernames=[]
     with open("Login_Informations.txt","r") as file:
@@ -290,8 +280,7 @@ def Deposite(Datas,lines,Accounts):
         print("...Account Number Is Wrong...")
 # --------------------------------------------------------------
 # Customer Deposite---------------------------------------------
-def Customer_Deposite(Datas):
-    Customer_Id=Getting_Customer_Id()
+def Customer_Deposite(Datas,Customer_Id):
     lines,Accounts=Show_Customer_Accounts(Customer_Id)
     Deposite(Datas,lines,Accounts)
 # --------------------------------------------------------------
@@ -354,8 +343,7 @@ def Withdrawal(Datas,lines,Accounts):
         print("...Account Number Is Wrong...")    
 # --------------------------------------------------------------
 # Customer Withdrawal-------------------------------------------
-def Customer_Withdrawal(Datas):
-    Customer_Id=Getting_Customer_Id()
+def Customer_Withdrawal(Datas,Customer_Id):
     lines,Accounts=Show_Customer_Accounts(Customer_Id)
     Withdrawal(Datas,lines,Accounts)
 # --------------------------------------------------------------
@@ -578,6 +566,7 @@ def Remove_Customer():
 # Remove Account -----------------------------------------------
 def Remove_Account():
     Updated_Account_Lines=[]
+    Accounts=[]
     with open("Account_Details.txt","r") as file:
         Account_Lines=file.readlines()
     try:
@@ -585,20 +574,23 @@ def Remove_Account():
     except ValueError:
         print("...Accont No Only In Numbers!...")
     for Account_Line in Account_Lines:
-            if str(Account_No) in Account_Line.split("   "):
-                Account_Detas=Account_Line.strip().split("   ")
-                Current_Balance=Account_Detas[-1]
-                Date_And_Time=datetime.now().strftime("%Y-%m-%d   %H:%M:%S")
-                with open("Transaction_History.txt","a") as file:
-                    file.write(f"{Account_Detas[2]}   {Date_And_Time}   {Account_Detas[3]}   -{Current_Balance}   0.0\n")
-                Account_Detas[-1]="0.0"
-                Account_Detas[3]=(f"Past-{Account_Detas[3]}")
-                Updated_Account_Lines.append("   ".join(Account_Detas)+"\n")
-            else:
-                Updated_Account_Lines.append(Account_Line)
+        Accounts.append(Account_Line.split("   ")[3])
+        if str(Account_No) in Account_Line.split("   "):
+            Account_Detas=Account_Line.strip().split("   ")
+            Current_Balance=Account_Detas[-1]
+            Date_And_Time=datetime.now().strftime("%Y-%m-%d   %H:%M:%S")
+            with open("Transaction_History.txt","a") as file:
+                file.write(f"{Account_Detas[2]}   {Date_And_Time}   {Account_Detas[3]}   -{Current_Balance}   0.0\n")
+            Account_Detas[-1]="0.0"
+            Account_Detas[3]=(f"Past-{Account_Detas[3]}")
+            Updated_Account_Lines.append("   ".join(Account_Detas)+"\n")
+            print("...Successfully Account Removed...")
+        else:
+            Updated_Account_Lines.append(Account_Line)
     with open("Account_Details.txt","w") as file:
         file.writelines(Updated_Account_Lines)
-    print("...Successfully Account Removed...")
+    if str(Account_No) not in Accounts:
+        print("...Invalid Account Number!...")
 # --------------------------------------------------------------
 # Transaction History-------------------------------------------
 def Transaction_HIstory(Customer_Id):
@@ -691,7 +683,7 @@ def Transfer_Account_Amount(My_Accounts,Accounts_Balances,All_Accounts,Lines,Dat
                 print("...Transfer Money Only In Numbers!...")
                 continue
             if Transfer_Money>0:
-                if str(Transfer_Money)<=Accounts_Balances[str(Select_Account)]:
+                if Transfer_Money<=float(Accounts_Balances[str(Select_Account)]):
                     try:
                         Transfer_Account=int(input("Enter The Transfer Account Number:"))
                     except ValueError:
@@ -794,12 +786,12 @@ def Customer_Menu(Datas):
         except ValueError:
             print("...Numbers Only!...")
         if Customer_Response==1:
-            Changing_Username_Password()
+            Changing_Username_Password(Customer_Id)
             break   
         elif Customer_Response==2:
-            Customer_Deposite(Datas)
+            Customer_Deposite(Datas,Customer_Id)
         elif Customer_Response==3:
-            Customer_Withdrawal(Datas)
+            Customer_Withdrawal(Datas,Customer_Id)
         elif Customer_Response==4:
             Show_Account_Balance(Customer_Id)
         elif Customer_Response==5:
